@@ -1,7 +1,7 @@
 baseURL: https://anastasiafu-portfolio.netlify.app
 languageCode: en-us
-title: 
-theme: forty
+title: Anastasia's Portfolio
+theme: graysx
 googleAnalytics: ''
 disqusShortname: ''
 params:
@@ -16,19 +16,19 @@ params:
     address:
       - city: London
         country: UK
-        street: Regent's Park
+        street: Merchant Square
         title: Address
     buttonClear: Clear
     buttonSend: Send message
     email:
-      - email: kostis@london.edu
+      - email: afu.mam2023@london.edu
     enable: yes
     phone:
-      - phone: (000) 000-0000 x1234
+      - phone: +44 07421898846
         title: Phone
   custom_css: []
   custom_js: []
-  description: Your description
+  description: Hi, I am Anastasia. Welcome to my personal website with my process of learning R.
   error404:
     heading: Page couldn't be found
     text: Please visit [this page](/)
