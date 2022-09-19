@@ -1,4 +1,4 @@
-baseURL: https://https://anastasiafu-portfolio.netlify.app/
+baseURL: https://anastasiafu-portfolio.netlify.app/
 languageCode: en-us
 title: Portfolio website for Anastasia Fu
 theme: forty
@@ -85,7 +85,7 @@ params:
         title: Risk Return
         url: blogs/risk_return
       - image: pic02.jpg
-        subtitle: Tang Zezhou
+        subtitle: Anastasia Fu
         title: About Me
         url: blogs/about_me
       - image: pic03.jpg
