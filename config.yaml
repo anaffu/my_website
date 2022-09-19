@@ -38,9 +38,6 @@ params:
     copyright: Anastasia Fu
     enable: yes
     quicklinks:
-      - alt: HTML5 UP
-        text: 'Design: '
-        url: https://www.html5up.net
     social:
       - icon: fa-facebook
         label: Facebook
