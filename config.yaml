@@ -74,7 +74,7 @@ params:
     enable: yes
     showcase:
       - image: lbs.jpg
-        subtitle: ccc
+        subtitle: About me
         title: About me
         url: blogs/aliquam
       - image: pic02.jpg
