@@ -99,7 +99,7 @@ params:
       - image: pic05.jpg
         subtitle: Attached
         title: My CV
-        url: blogs/afu_cv.pdf
+        url: blogs/ana.pdf
   two:
     buttonText: Get Started
     enable: yes
