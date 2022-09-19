@@ -81,13 +81,13 @@ params:
     enable: yes
     showcase:
       - image: lbs.jpg
-        subtitle: An example
-        title: Risk Return
-        url: blogs/risk_return
-      - image: pic02.jpg
         subtitle: Anastasia Fu
         title: About Me
         url: blogs/about_me
+      - image: pic02.jpg
+        subtitle: Anastasia Fu
+        title: Homework 1
+        url: blogs/homework1
       - image: pic03.jpg
         subtitle: Group work 2
         title: Homework 2
@@ -95,15 +95,11 @@ params:
       - image: pic04.jpg
         subtitle: Group work 3
         title: Homework 3
-        url: blogs/ipsum
+        url: blogs/homework3
       - image: pic05.jpg
         subtitle: Attached
         title: My CV
-        url: blogs/tzz_cv.pdf
-      - image: pic06.jpg
-        subtitle: Group work 1
-        title: Homework 1
-        url: blogs/homework1
+        url: blogs/afu_cv.pdf
   two:
     buttonText: Get Started
     enable: yes
