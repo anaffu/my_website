@@ -1,6 +1,6 @@
 baseURL: https://https://anastasiafu-portfolio.netlify.app/
 languageCode: en-us
-title: Portfolio website for Zezhou Tang
+title: Portfolio website for Anastasia Fu
 theme: forty
 googleAnalytics: ''
 disqusShortname: ''
@@ -12,22 +12,22 @@ params:
     #subtitle: |-
       # A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
       # AND RELEASED UNDER THE CREATIVE COMMONS.
-    title: Hi, my name is Zezhou Tang.
+    title: Hi, my name is Anastasia Fu.
   blog: {}
   contact:
     address:
-      - city: London, NW8 6EB
+      - city: London
         country: UK
-        street: 16A, Finchley Road
+        street: Merchant Square
         title: Address
     buttonClear: Clear
     buttonSend: Send message
     email:
-      - email: ztang.mam2023@london.edu
+      - email: afu.mam2023@london.edu
         title: Email
     enable: yes
     phone:
-      - phone: (86) 13588155725
+      - phone: (44) 07421898846
         title: Phone
   custom_css: []
   custom_js: []
@@ -37,7 +37,7 @@ params:
     text: Please visit [this page](/)
   favicon: favicon.ico
   footer:
-    copyright: Zezhou Tang
+    copyright: Anastasia Fu
     enable: yes
     quicklinks:
     social:
@@ -52,10 +52,10 @@ params:
       #  url: https://www.instagram.com
       - icon: fa-github
         label: GitHub
-        url: https://github.com/Zezhou-Tang
+        url: https://github.com/anaffu/
       - icon: fa-linkedin
         label: LinkedIn
-        url: https://www.linkedin.com/in/elijah-zezhou-tang/
+        url: https://www.linkedin.com/in/anastasiafu-48bb58171/
   image: ''
   name: Your name
   navigation:
@@ -76,7 +76,7 @@ params:
         url: elements.html
     menu: 
     subtitle: Personal Website
-    title: Zezhou Tang
+    title: Anastasia Fu
   tiles:
     enable: yes
     showcase:
