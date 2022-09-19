@@ -41,7 +41,7 @@ params:
     social:
       - icon: fa-facebook
         label: Facebook
-        url: https://www.facebook.com/anastasia.fu.754
+        url: https://www.facebook.com/anastasia.fu.754/
       - icon: fa-instagram
         label: Instagram
         url: https://www.instagram.com/anastasiaffu/
@@ -76,7 +76,7 @@ params:
     enable: yes
     showcase:
       - image: lbs.jpg
-        subtitle: Find out more about me
+        subtitle: ccc
         title: About me
         url: blogs/aliquam
       - image: pic02.jpg
