@@ -1,11 +1,9 @@
-# Site settings
-baseURL = "https://anastasiafu-portfolio.netlify.app"
-languageCode = "en-us"
-title = "Anastasia's Portfolio"
-theme = "forty"
-googleAnalytics = ""
-disqusShortname = ""
-
+baseURL = https://anastasiafu-portfolio.netlify.app
+languageCode = en-us
+title = Anastasia's Portfolio
+theme = forty
+googleAnalytics = ''
+disqusShortname = ''
 params:
   banner:
     buttonText: Get Started
