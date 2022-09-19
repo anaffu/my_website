@@ -1,0 +1,421 @@
+---
+title: "Session 4: Homework 2"
+author: "Study group and members' names go here"
+date: "2022-09-19"
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    code_folding: show
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+
+
+<div id="climate-change-and-temperature-anomalies" class="section level1">
+<h1>Climate change and temperature anomalies</h1>
+<p>If we wanted to study climate change, we can find data on the <em>Combined
+Land-Surface Air and Sea-Surface Water Temperature Anomalies</em> in the
+Northern Hemisphere at <a href="https://data.giss.nasa.gov/gistemp">NASA’s Goddard Institute for Space
+Studies</a>. The <a href="https://data.giss.nasa.gov/gistemp/tabledata_v4/NH.Ts+dSST.txt">tabular data of
+temperature anomalies can be found
+here</a></p>
+<p>To define temperature anomalies you need to have a reference, or base,
+period which NASA clearly states that it is the period between
+1951-1980.</p>
+<p>Run the code below to load the file:</p>
+<pre class="r"><code>weather &lt;- 
+  read_csv(&quot;https://data.giss.nasa.gov/gistemp/tabledata_v4/NH.Ts+dSST.csv&quot;, 
+           skip = 1, 
+           na = &quot;***&quot;)</code></pre>
+<p>Notice that, when using this function, we added two options: <code>skip</code> and
+<code>na</code>.</p>
+<ol style="list-style-type: decimal">
+<li>The <code>skip=1</code> option is there as the real data table only starts in
+Row 2, so we need to skip one row.</li>
+<li><code>na = "***"</code> option informs R how missing observations in the
+spreadsheet are coded. When looking at the spreadsheet, you can see
+that missing data is coded as “***”. It is best to specify this
+here, as otherwise some of the data is not recognized as numeric
+data.</li>
+</ol>
+<p>Once the data is loaded, notice that there is a object titled <code>weather</code>
+in the <code>Environment</code> panel. If you cannot see the panel (usually on the
+top-right), go to <code>Tools</code> &gt; <code>Global Options</code> &gt; <code>Pane Layout</code> and tick
+the checkbox next to <code>Environment</code>. Click on the <code>weather</code> object, and
+the dataframe will pop up on a seperate tab. Inspect the dataframe.</p>
+<p>For each month and year, the dataframe shows the deviation of
+temperature from the normal (expected). Further the dataframe is in wide
+format.</p>
+<p>You have two objectives in this section:</p>
+<ol style="list-style-type: decimal">
+<li><p>Select the year and the twelve month variables from the <code>weather</code>
+dataset. We do not need the others (J-D, D-N, DJF, etc.) for this
+assignment. Hint: use <code>select()</code> function.</p></li>
+<li><p>Convert the dataframe from wide to ‘long’ format. Hint: use
+<code>gather()</code> or <code>pivot_longer()</code> function. Name the new dataframe as
+<code>tidyweather</code>, name the variable containing the name of the month as
+<code>month</code>, and the temperature deviation values as <code>delta</code>.</p></li>
+</ol>
+<p>Inspect your dataframe. It should have three variables now, one each for</p>
+<ol style="list-style-type: decimal">
+<li>year,</li>
+<li>month, and</li>
+<li>delta, or temperature deviation.</li>
+</ol>
+<div id="plotting-information" class="section level2">
+<h2>Plotting Information</h2>
+<p>Let us plot the data using a time-series scatter plot, and add a
+trendline. To do that, we first need to create a new variable called
+<code>date</code> in order to ensure that the <code>delta</code> values are plot
+chronologically.</p>
+<blockquote>
+<p>In the following chunk of code, I used the <code>eval=FALSE</code> argument,
+which does not run a chunk of code; I did so that you can knit the
+document before tidying the data and creating a new dataframe
+<code>tidyweather</code>. When you actually want to run this code and knit your
+document, you must delete <code>eval=FALSE</code>, <strong>not just here but in all
+chunks were <code>eval=FALSE</code> appears.</strong></p>
+</blockquote>
+<pre class="r"><code>tidyweather &lt;- tidyweather %&gt;%
+  mutate(date = ymd(paste(as.character(Year), Month, &quot;1&quot;)),
+         month = month(date, label=TRUE),
+         year = year(date))
+
+ggplot(tidyweather, aes(x=date, y = delta))+
+  geom_point()+
+  geom_smooth(color=&quot;red&quot;) +
+  theme_bw() +
+  labs (
+    title = &quot;Weather Anomalies&quot;
+  )</code></pre>
+<p>Is the effect of increasing temperature more pronounced in some months?
+Use <code>facet_wrap()</code> to produce a seperate scatter plot for each month,
+again with a smoothing line. Your chart should human-readable labels;
+that is, each month should be labeled “Jan”, “Feb”, “Mar” (full or
+abbreviated month names are fine), not <code>1</code>, <code>2</code>, <code>3</code>.</p>
+<p>It is sometimes useful to group data into different time periods to
+study historical data. For example, we often refer to decades such as
+1970s, 1980s, 1990s etc. to refer to a period of time. NASA calcuialtes
+a temperature anomaly, as difference form the base periof of 1951-1980.
+The code below creates a new data frame called <code>comparison</code> that groups
+data in five time periods: 1881-1920, 1921-1950, 1951-1980, 1981-2010
+and 2011-present.</p>
+<p>We remove data before 1800 and before using <code>filter</code>. Then, we use the
+<code>mutate</code> function to create a new variable <code>interval</code> which contains
+information on which period each observation belongs to. We can assign
+the different periods using <code>case_when()</code>.</p>
+<pre class="r"><code>comparison &lt;- tidyweather %&gt;% 
+  filter(Year&gt;= 1881) %&gt;%     #remove years prior to 1881
+  #create new variable &#39;interval&#39;, and assign values based on criteria below:
+  mutate(interval = case_when(
+    Year %in% c(1881:1920) ~ &quot;1881-1920&quot;,
+    Year %in% c(1921:1950) ~ &quot;1921-1950&quot;,
+    Year %in% c(1951:1980) ~ &quot;1951-1980&quot;,
+    Year %in% c(1981:2010) ~ &quot;1981-2010&quot;,
+    TRUE ~ &quot;2011-present&quot;
+  ))</code></pre>
+<p>Inspect the <code>comparison</code> dataframe by clicking on it in the
+<code>Environment</code> pane.</p>
+<p>Now that we have the <code>interval</code> variable, we can create a density plot
+to study the distribution of monthly deviations (<code>delta</code>), grouped by
+the different time periods we are interested in. Set <code>fill</code> to
+<code>interval</code> to group and colour the data by different time periods.</p>
+<p>So far, we have been working with monthly anomalies. However, we might
+be interested in average annual anomalies. We can do this by using
+<code>group_by()</code> and <code>summarise()</code>, followed by a scatter plot to display
+the result.</p>
+<pre class="r"><code>#creating yearly averages
+average_annual_anomaly &lt;- tidyweather %&gt;% 
+  group_by(Year) %&gt;%   #grouping data by Year
+  
+  # creating summaries for mean delta 
+  # use `na.rm=TRUE` to eliminate NA (not available) values 
+  summarise(......) 
+
+#plotting the data:
+
+
+  
+  #Fit the best fit line, using LOESS method
+
+  
+  #change theme to theme_bw() to have white background + black frame around plot</code></pre>
+</div>
+<div id="confidence-interval-for-delta" class="section level2">
+<h2>Confidence Interval for <code>delta</code></h2>
+<p><a href="https://earthobservatory.nasa.gov/world-of-change/decadaltemp.php">NASA points out on their
+website</a>
+that</p>
+<blockquote>
+<p>A one-degree global change is significant because it takes a vast
+amount of heat to warm all the oceans, atmosphere, and land by that
+much. In the past, a one- to two-degree drop was all it took to plunge
+the Earth into the Little Ice Age.</p>
+</blockquote>
+<p>Your task is to construct a confidence interval for the average annual
+delta since 2011, both using a formula and using a bootstrap simulation
+with the <code>infer</code> package. Recall that the dataframe <code>comparison</code> has
+already grouped temperature anomalies according to time intervals; we
+are only interested in what is happening between 2011-present.</p>
+<pre class="r"><code>formula_ci &lt;- comparison %&gt;% 
+
+  # choose the interval 2011-present
+  # what dplyr verb will you use? 
+
+  # calculate summary statistics for temperature deviation (delta) 
+  # calculate mean, SD, count, SE, lower/upper 95% CI
+  # what dplyr verb will you use? 
+
+#print out formula_CI
+formula_ci</code></pre>
+<blockquote>
+<p>What is the data showing us? Please type your answer after (and
+outside!) this blockquote. You have to explain what you have done, and
+the interpretation of the result. One paragraph max, please!</p>
+</blockquote>
+</div>
+</div>
+<div id="bidens-approval-margins" class="section level1">
+<h1>Biden’s Approval Margins</h1>
+<p>As we saw in class, fivethirtyeight.com has detailed data on <a href="https://projects.fivethirtyeight.com/biden-approval-ratings">all polls
+that track the president’s
+approval</a></p>
+<pre class="r"><code># Import approval polls data directly off fivethirtyeight website
+approval_polllist &lt;- read_csv(&#39;https://projects.fivethirtyeight.com/biden-approval-data/approval_polllist.csv&#39;) 
+
+glimpse(approval_polllist)</code></pre>
+<pre><code>## Rows: 4,572
+## Columns: 22
+## $ president           &lt;chr&gt; &quot;Joe Biden&quot;, &quot;Joe Biden&quot;, &quot;Joe Biden&quot;, &quot;Joe Biden&quot;…
+## $ subgroup            &lt;chr&gt; &quot;All polls&quot;, &quot;All polls&quot;, &quot;All polls&quot;, &quot;All polls&quot;…
+## $ modeldate           &lt;chr&gt; &quot;9/19/2022&quot;, &quot;9/19/2022&quot;, &quot;9/19/2022&quot;, &quot;9/19/2022&quot;…
+## $ startdate           &lt;chr&gt; &quot;1/19/2021&quot;, &quot;1/19/2021&quot;, &quot;1/20/2021&quot;, &quot;1/20/2021&quot;…
+## $ enddate             &lt;chr&gt; &quot;1/21/2021&quot;, &quot;1/21/2021&quot;, &quot;1/21/2021&quot;, &quot;1/21/2021&quot;…
+## $ pollster            &lt;chr&gt; &quot;Morning Consult&quot;, &quot;Rasmussen Reports/Pulse Opinio…
+## $ grade               &lt;chr&gt; &quot;B&quot;, &quot;B&quot;, &quot;B-&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B+&quot;, &quot;B+&quot;, &quot;B&quot;, &quot;B-&quot;, &quot;…
+## $ samplesize          &lt;dbl&gt; 15000, 1500, 1115, 1993, 15000, 1516, 941, 15000, …
+## $ population          &lt;chr&gt; &quot;a&quot;, &quot;lv&quot;, &quot;a&quot;, &quot;rv&quot;, &quot;a&quot;, &quot;a&quot;, &quot;rv&quot;, &quot;a&quot;, &quot;rv&quot;, &quot;…
+## $ weight              &lt;dbl&gt; 0.2594, 0.3382, 1.1014, 0.0930, 0.2333, 1.2454, 1.…
+## $ influence           &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ approve             &lt;dbl&gt; 50.0, 48.0, 55.5, 56.0, 51.0, 45.0, 63.0, 52.0, 58…
+## $ disapprove          &lt;dbl&gt; 28.0, 45.0, 31.6, 31.0, 28.0, 28.0, 37.0, 29.0, 32…
+## $ adjusted_approve    &lt;dbl&gt; 49.4, 49.1, 54.6, 55.4, 50.4, 46.0, 59.4, 51.4, 57…
+## $ adjusted_disapprove &lt;dbl&gt; 30.9, 40.3, 32.4, 33.9, 30.9, 29.0, 38.4, 31.9, 32…
+## $ multiversions       &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ tracking            &lt;lgl&gt; TRUE, TRUE, NA, NA, TRUE, NA, NA, TRUE, NA, TRUE, …
+## $ url                 &lt;chr&gt; &quot;https://morningconsult.com/form/global-leader-app…
+## $ poll_id             &lt;dbl&gt; 74272, 74247, 74248, 74246, 74273, 74327, 74256, 7…
+## $ question_id         &lt;dbl&gt; 139491, 139395, 139404, 139394, 139492, 139570, 13…
+## $ createddate         &lt;chr&gt; &quot;1/28/2021&quot;, &quot;1/22/2021&quot;, &quot;1/22/2021&quot;, &quot;1/22/2021&quot;…
+## $ timestamp           &lt;chr&gt; &quot;09:58:31 19 Sep 2022&quot;, &quot;09:58:31 19 Sep 2022&quot;, &quot;0…</code></pre>
+<pre class="r"><code># Use `lubridate` to fix dates, as they are given as characters.</code></pre>
+<div id="create-a-plot" class="section level2">
+<h2>Create a plot</h2>
+<p>What I would like you to do is to calculate the average net approval
+rate (approve- disapprove) for each week since he got into office. I
+want you plot the net approval for each week in 2022, along with its 95%
+confidence interval. There are various dates given for each poll, please
+use <code>enddate</code>, i.e., the date the poll ended. Your plot should look
+something like this:</p>
+<p><img src="../../images/biden_approval_margin.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="challenge-1-excess-rentals-in-tfl-bike-sharing" class="section level1">
+<h1>Challenge 1: Excess rentals in TfL bike sharing</h1>
+<p>Recall the TfL data on how many bikes were hired every single day. We
+can get the latest data by running the following</p>
+<pre class="r"><code>url &lt;- &quot;https://data.london.gov.uk/download/number-bicycle-hires/ac29363e-e0cb-47cc-a97a-e216d900a6b0/tfl-daily-cycle-hires.xlsx&quot;
+
+# Download TFL data to temporary file
+httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2022-09-06T12%3A41%3A48/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20220919%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20220919T182049Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=a300c3fe146215909f048e060373f51a496dd6d62df81340f6f65bac6a7465e0&amp;X-Amz-SignedHeaders=host]
+##   Date: 2022-09-19 18:20
+##   Status: 200
+##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+##   Size: 180 kB
+## &lt;ON DISK&gt;  C:\Users\25292\AppData\Local\Temp\RtmpUxKBFC\file5768757913bb.xlsx</code></pre>
+<pre class="r"><code># Use read_excel to read it as dataframe
+bike0 &lt;- read_excel(bike.temp,
+                   sheet = &quot;Data&quot;,
+                   range = cell_cols(&quot;A:B&quot;))
+
+# change dates to get year, month, and week
+bike &lt;- bike0 %&gt;% 
+  clean_names() %&gt;% 
+  rename (bikes_hired = number_of_bicycle_hires) %&gt;% 
+  mutate (year = year(day),
+          month = lubridate::month(day, label = TRUE),
+          week = isoweek(day))</code></pre>
+<p>We can easily create a facet grid that plots bikes hired by month and
+year since 2015</p>
+<p><img src="../../images/tfl_distributions_monthly.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>However, the challenge I want you to work on is to reproduce the
+following two graphs.</p>
+<p><img src="../../images/tfl_monthly.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>The second one looks at percentage changes from the expected level of
+weekly rentals. The two grey shaded rectangles correspond to Q2 (weeks
+14-26) and Q4 (weeks 40-52).</p>
+<p><img src="../../images/tfl_weekly.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>For both of these graphs, you have to calculate the expected number of
+rentals per week or month between 2016-2019 and then, see how each
+week/month of 2020-2022 compares to the expected rentals. Think of the
+calculation <code>excess_rentals = actual_rentals - expected_rentals</code>.</p>
+<p>Should you use the mean or the median to calculate your expected
+rentals? Why?</p>
+<p>In creating your plots, you may find these links useful:</p>
+<ul>
+<li><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="uri">https://ggplot2.tidyverse.org/reference/geom_ribbon.html</a></li>
+<li><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="uri">https://ggplot2.tidyverse.org/reference/geom_tile.html</a></li>
+<li><a href="https://ggplot2.tidyverse.org/reference/geom_rug.html" class="uri">https://ggplot2.tidyverse.org/reference/geom_rug.html</a></li>
+</ul>
+</div>
+<div id="challenge-2-share-of-renewable-energy-production-in-the-world" class="section level1">
+<h1>Challenge 2: Share of renewable energy production in the world</h1>
+<p>The National Bureau of Economic Research (NBER) has a a very interesting
+dataset on the adoption of about 200 technologies in more than 150
+countries since 1800. This is the<a href="https://www.nber.org/research/data/cross-country-historical-adoption-technology">Cross-country Historical Adoption of
+Technology (CHAT) dataset</a>.</p>
+<p>The following is a description of the variables</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>variable</strong></th>
+<th><strong>class</strong></th>
+<th><strong>description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>variable</td>
+<td>character</td>
+<td>Variable name</td>
+</tr>
+<tr class="even">
+<td>label</td>
+<td>character</td>
+<td>Label for variable</td>
+</tr>
+<tr class="odd">
+<td>iso3c</td>
+<td>character</td>
+<td>Country code</td>
+</tr>
+<tr class="even">
+<td>year</td>
+<td>double</td>
+<td>Year</td>
+</tr>
+<tr class="odd">
+<td>group</td>
+<td>character</td>
+<td>Group (consumption/production)</td>
+</tr>
+<tr class="even">
+<td>category</td>
+<td>character</td>
+<td>Category</td>
+</tr>
+<tr class="odd">
+<td>value</td>
+<td>double</td>
+<td>Value (related to label)</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>technology &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-19/technology.csv&#39;)
+
+#get all technologies
+labels &lt;- technology %&gt;% 
+  distinct(variable, label)
+
+# Get country names using &#39;countrycode&#39; package
+technology &lt;- technology %&gt;% 
+  filter(iso3c != &quot;XCD&quot;) %&gt;% 
+  mutate(iso3c = recode(iso3c, &quot;ROM&quot; = &quot;ROU&quot;),
+         country = countrycode(iso3c, origin = &quot;iso3c&quot;, destination = &quot;country.name&quot;),
+         country = case_when(
+           iso3c == &quot;ANT&quot; ~ &quot;Netherlands Antilles&quot;,
+           iso3c == &quot;CSK&quot; ~ &quot;Czechoslovakia&quot;,
+           iso3c == &quot;XKX&quot; ~ &quot;Kosovo&quot;,
+           TRUE           ~ country))
+
+#make smaller dataframe on energy
+energy &lt;- technology %&gt;% 
+  filter(category == &quot;Energy&quot;)
+
+# download CO2 per capita from World Bank using {wbstats} package
+# https://data.worldbank.org/indicator/EN.ATM.CO2E.PC
+co2_percap &lt;- wb_data(country = &quot;countries_only&quot;, 
+                      indicator = &quot;EN.ATM.CO2E.PC&quot;, 
+                      start_date = 1970, 
+                      end_date = 2022,
+                      return_wide=FALSE) %&gt;% 
+  filter(!is.na(value)) %&gt;% 
+  #drop unwanted variables
+  select(-c(unit, obs_status, footnote, last_updated))
+
+# get a list of countries and their characteristics
+# we just want to get the region a country is in and its income level
+countries &lt;-  wb_cachelist$countries %&gt;% 
+  select(iso3c,region,income_level)</code></pre>
+<p>This is a very rich data set, not just for energy and CO2 data, but for many other technologies. In our case, we just need to produce a couple of graphs– at this stage, the emphasis is on data manipulation, rather than making the graphs gorgeous.</p>
+<p>First, produce a graph with the countries with the highest and lowest % contribution of renewables in energy production. This is made up of <code>elec_hydro</code>, <code>elec_solar</code>, <code>elec_wind</code>, and <code>elec_renew_other</code>. You may want to use the <em>patchwork</em> package to assemble the two charts next to each other.</p>
+<p><img src="../../images/renewables.png" width="100%" style="display: block; margin: auto;" />
+Second, you can produce an animation to explore the relationship between CO2 per capita emissions and the deployment of renewables. As the % of energy generated by renewables goes up, do CO2 per capita emissions seem to go down?</p>
+<p><img src="../../images/animation.gif" width="100%" style="display: block; margin: auto;" /></p>
+<p>To create this animation is actually straight-forward. You manipulate your date, and the create the graph in the normal ggplot way. the only <code>gganimate</code> layers you need to add to your graphs are</p>
+<pre><code>  labs(title = &#39;Year: {frame_time}&#39;, 
+       x = &#39;% renewables&#39;, 
+       y = &#39;CO2 per cap&#39;) +
+  transition_time(year) +
+  ease_aes(&#39;linear&#39;)</code></pre>
+</div>
+<div id="deliverables" class="section level1">
+<h1>Deliverables</h1>
+<p>As usual, there is a lot of explanatory text, comments, etc. You do not
+need these, so delete them and produce a stand-alone document that you
+could share with someone. Knit the edited and completed R Markdown file
+as an HTML document (use the “Knit” button at the top of the script
+editor window) and upload it to Canvas.</p>
+</div>
+<div id="details" class="section level1">
+<h1>Details</h1>
+<ul>
+<li>Who did you collaborate with: TYPE NAMES HERE</li>
+<li>Approximately how much time did you spend on this problem set:
+ANSWER HERE</li>
+<li>What, if anything, gave you the most trouble: ANSWER HERE</li>
+</ul>
+<p><strong>Please seek out help when you need it,</strong> and remember the <a href="https://mam202.netlify.app/syllabus/#the-15-minute-rule" target="_blank">15-minute
+rule</a>.
+You know enough R (and have enough examples of code from class and your
+readings) to be able to do this. If you get stuck, ask for help from
+others, post a question on Slack– and remember that I am here to help
+too!</p>
+<blockquote>
+<p>As a true test to yourself, do you understand the code you submitted
+and are you able to explain it to someone else?</p>
+</blockquote>
+</div>
+<div id="rubric" class="section level1">
+<h1>Rubric</h1>
+<p>Check minus (1/5): Displays minimal effort. Doesn’t complete all
+components. Code is poorly written and not documented. Uses the same
+type of plot for each graph, or doesn’t use plots appropriate for the
+variables being analyzed.</p>
+<p>Check (3/5): Solid effort. Hits all the elements. No clear mistakes.
+Easy to follow (both the code and the output).</p>
+<p>Check plus (5/5): Finished all components of the assignment correctly
+and addressed both challenges. Code is well-documented (both
+self-documented and with additional comments as necessary). Used
+tidyverse, instead of base R. Graphs and tables are properly labelled.
+Analysis is clear and easy to follow, either because graphs are labeled
+clearly or you’ve written additional text to describe how you interpret
+the output.</p>
+</div>
